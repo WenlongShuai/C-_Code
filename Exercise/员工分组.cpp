@@ -14,6 +14,10 @@ using namespace std;
 #include <cstdlib>
 #include <ctime>
 
+#define CEHUA 	1
+#define MEISHU 	2
+#define YANFA 	3
+
 class Employee
 {
 public:
@@ -39,32 +43,67 @@ void createEmployee(vector<Employee> &v)
 
 void setDepartmentAndSalary(vector<Employee> &v, multimap<int, Employee> &m)
 {
-	for(int i = 0;i<10;i++)
+	// for(int i = 0;i<10;i++)
+	// {
+	// 	int department = 1+rand()%3;   //a+rand()%(b+1-a)
+	// 	int salary = 1000 + rand()%1000;
+	// 	v[i].m_Salary = salary;
+	// 	m.insert(make_pair(department, v[i]));
+	// }
+
+	for(vector<Employee>::iterator it = v.begin();it != v.end();it++)
 	{
-		int department = 1+rand()%3;   //a+rand()%(b+1-a)
+		int department = 1+rand()%3;
 		int salary = 1000 + rand()%1000;
-		v[i].m_Salary = salary;
-		m.insert(make_pair(department, v[i]));
+		(*it).m_Salary = salary;
+		m.insert(make_pair(department, *it));
 	}
 }
 
-void printEmployee(const multimap<int, Employee> &m)
+void printEmployee(multimap<int, Employee> &m)
 {
-	for(multimap<int, Employee>::const_iterator it = m.begin();it != m.end();it++)
+	// for(multimap<int, Employee>::iterator it = m.begin();it != m.end();it++)
+	// {
+	// 	if(it->first == 1)
+	// 	{
+	// 		cout<<"部门:策划"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
+	// 	}
+	// 	else if(it->first == 2)
+	// 	{
+	// 		cout<<"部门:美术"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
+	// 	}
+	// 	else
+	// 	{
+	// 		cout<<"部门:研发"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
+	// 	}
+	// }	
+
+	cout<<"策划部门:"<<endl;
+	multimap<int, Employee>::iterator pos = m.find(CEHUA);
+	int count = m.count(CEHUA);
+	int index = 0;
+	for( ;pos != m.end() && index < count; index++, pos++)
 	{
-		if(it->first == 1)
-		{
-			cout<<"部门:策划"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
-		}
-		else if(it->first == 2)
-		{
-			cout<<"部门:美术"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
-		}
-		else
-		{
-			cout<<"部门:研发"<<" 姓名:"<<it->second.m_Name<<" 工资:"<<it->second.m_Salary<<endl;
-		}
-	}	
+		cout<<"姓名:"<<pos->second.m_Name<<"工资:"<<pos->second.m_Salary<<endl;
+	}
+
+	cout<<"美术部门:"<<endl;
+	pos = m.find(MEISHU);
+	count = m.count(MEISHU);
+	index = 0;
+	for( ;pos != m.end() && index < count; index++, pos++)
+	{
+		cout<<"姓名:"<<pos->second.m_Name<<"工资:"<<pos->second.m_Salary<<endl;
+	}
+
+	cout<<"研发部门:"<<endl;
+	pos = m.find(YANFA);
+	count = m.count(YANFA);
+	index = 0;
+	for( ;pos != m.end() && index < count; index++, pos++)
+	{
+		cout<<"姓名:"<<pos->second.m_Name<<"工资:"<<pos->second.m_Salary<<endl;
+	}
 }
 
 int main()
