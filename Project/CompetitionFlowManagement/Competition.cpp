@@ -1,50 +1,38 @@
 #include "Competition.h"
 
-class MyCompare
+Competition::Competition()
 {
-public:
-	bool operator()(Player &p1, Player &p2) const
-	{
-		return p1.getScore() > p2.getScore();
-	}
-};
+	this->initCompetition(this->playerNum, this->grouping);
+}
 
-void createPlayer(vector<Player> &player)
+Competition::~Competition()
 {
+
+}
+
+void Competition::createPlayer(vector<int> &pN, map<int, Player> &mp)
+{
+	for(int i = 0;i < 12;i++)
+	{
+		pN.push_back(10002+i);
+	}
+
+	random_shuffle(pN.begin(), pN.end());
+
 	string nameFlag = "ABCDEFGHIJKL";
 	for(int i = 0;i < 12;i++)
 	{
 		string name = "选手";
 		name += nameFlag[i];
-		Player p(10002+i, name, 0);
-		player.push_back(p);
+		Player p(name, 0);
+		mp.insert(pair<int, Player>(pN[i], p));
 	}
 }
 
-void setGrouping(vector<Player> &p, multimap<int, Player> mp)
+
+void Competition::markPlayer(map<int, Player> &player)
 {
-	random_shuffle(p.begin(), p.end());
-	int pSize = p.size();
-
-	for(int i = 0;i < pSize/2;i++)
-	{
-		mp.insert(pair<int, Player>(1,p[i]));
-	}
-
-	for(int i = pSize/2;i < pSize;i++)
-	{
-		mp.insert(make_pair(2, p[i]));
-	}
-}
-
-void markPlayer(multimap<int, Player> player)
-{
-	
-	multimap<int, Player>::iterator pos = player.find(1);
-	int count = player.count(1);
-	int index = 0;
-
-	for( ;pos != player.end() && index < count;pos++, index++ )
+	for(map<int, Player>::iterator it = player.begin(); it != player.end(); it++)
 	{
 		deque<int> d;
 		for(int i = 0;i < 10;i++)
@@ -63,74 +51,52 @@ void markPlayer(multimap<int, Player> player)
 		}
 		float avg = sum * 1.0 / d.size();
 
-		pos->second.setScore(avg);
-		
-	}
-
-	pos = player.find(2);
-	count = player.count(2);
-	index = 0;
-	for( ;pos != player.end() && index < count;pos++, index++ )
-	{
-		deque<int> d;
-		for(int i = 0;i < 10;i++)
-		{
-			int score = 60+rand()%41;
-			d.push_back(score);
-		}
-		sort(d.begin(), d.end());
-
-		d.pop_front();
-		d.pop_back();
-		int sum = 0;
-		for(deque<int>::iterator it = d.begin();it != d.end();it++)
-		{
-			sum += *it;
-		}
-		float avg = sum * 1.0 / d.size();
-
-		pos->second.setScore(avg);
+		it->second.setScore(avg);
 	}
 }
 
-void printPlayer(vector<Player> &p)
+void Competition::printPlayer(vector<Player> &p)
 {
 	for(vector<Player>::iterator it = p.begin();it != p.end();it++)
 	{
-		cout<<"选手:"<<it->getNum()<<"成绩:"<<it->getScore()<<endl;
+		cout<<"选手:"<<it->getName()<<"成绩:"<<it->getScore()<<endl;
 	}
 }
 
-void printGrouping(multimap<int, Player> g)
+void Competition::printGrouping(map<int, Player> &grouping)
 {
-	multimap<int, Player>::iterator pos = g.find(1);
-	int count = g.count(1);
+	
+	int size = grouping.size();
 	int index = 0;
+	map<int, Player>::iterator it = grouping.begin();
 	cout<<"第一组:"<<endl;
-	for( ;pos != g.end() && index < count;pos++, index++ )
+	sort(grouping.begin(), grouping.end(), MyCompare());
+	for( ; it != grouping.end() && index < size / 2; it++, index++)
 	{
-		
-		cout<<"编号："<<pos->second.getNum()<<" 姓名:"<<pos->second.getName()<<" 成绩:"<<pos->second.getScore()<<endl;
+		cout<<"编号："<<it->first<<" 姓名:"<<it->second.getName()<<" 成绩:"<<it->second.getScore()<<endl;
 	}
 
-	pos = g.find(2);
-	count = g.count(2);
-	index = 0;
+	index = size / 2;
 	cout<<"第二组:"<<endl;
-	for( ;pos != g.end() && index < count;pos++, index++ )
+	for( ; it != grouping.end() && index < size; it++, index++)
 	{
-		cout<<"编号："<<pos->second.getNum()<<" 姓名:"<<pos->second.getName()<<" 成绩:"<<pos->second.getScore()<<endl;
+		
+		cout<<"编号："<<it->first<<" 姓名:"<<it->second.getName()<<" 成绩:"<<it->second.getScore()<<endl;
 	}
 }
 
 void print(pair<int, Player> p)
 {
-	cout<<p.second.getNum()<<" ";
+	cout<<p.first<<" ";
 }
 
+void Competition::initCompetition(vector<int> &playerNum, map<int, Player> &grouping)
+{
+	playerNum.clear();
+	grouping.clear();
+}
 
-
-void printMenu()
+void Competition::showMenu()
 {
 	cout<<"-----------------------------"<<endl;
 	cout<<"------欢迎参加演讲比赛-------"<<endl;
@@ -141,13 +107,9 @@ void printMenu()
 	cout<<"-----------------------------"<<endl;
 }
 
-void kickOff()
+void Competition::kickOff(vector<int> &playerNum, map<int, Player> &grouping)
 {
-	vector<Player> player;
-	multimap<int, Player, MyCompare> grouping;
-	
-	createPlayer(player);
-	setGrouping(player, grouping);
+	createPlayer(playerNum, grouping);
 
 	cout<<"第一轮比赛选手正在抽签"<<endl;
 	cout<<"-----------------"<<endl;
@@ -160,18 +122,26 @@ void kickOff()
 	markPlayer(grouping);
 	printGrouping(grouping);
 
-
-
 }
 
-void lookAtPastRecords()
+void Competition::lookAtPastRecords()
 {
 
 }
 
-void clearRecords()
+void Competition::clearRecords()
 {
 
+}
+
+void Competition::exit()
+{
+	cout<<"退出比赛,欢迎下次比赛"<<endl;
+}
+
+void Competition::inputError()
+{
+	cout<<"输入有误,请重新输入"<<endl;
 }
 
 
