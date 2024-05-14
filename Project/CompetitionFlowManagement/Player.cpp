@@ -1,18 +1,12 @@
 #include "Player.h"
 
 //有参构造
-Player::Player(int num, string name, float score)
+Player::Player(int index, string name, float score)
 {
-	this->playerNum = num;
 	this->playerName = name;
-	this->playerScore = score;
+	this->playerScore[index] = score;
 }
 
-//获取选手编号
-int Player::getNum()
-{
-	return this->playerNum;
-}
 
 //获取选手姓名
 string Player::getName()
@@ -21,15 +15,9 @@ string Player::getName()
 }
 
 //获取选手成绩
-float Player::getScore()
+float Player::getScore(int index)
 {
-	return this->playerScore;
-}
-
-//设置选手编号
-void Player::setNum(int num)
-{
-	this->playerNum = num;
+	return this->playerScore[index];
 }
 
 //设置选手名字
@@ -39,7 +27,7 @@ void Player::setName(string name)
 }
 
 //设置选手成绩
-void Player::setScore(float score)
+void Player::setScore(int index, float score)
 {
-	this->playerScore = score;
+	this->playerScore[index] = score;
 }

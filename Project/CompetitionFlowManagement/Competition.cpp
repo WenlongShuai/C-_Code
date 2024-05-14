@@ -2,7 +2,8 @@
 
 Competition::Competition()
 {
-	this->initCompetition(this->playerNum, this->grouping);
+	this->initCompetition();
+	this->createPlayer();
 }
 
 Competition::~Competition()
@@ -10,91 +11,130 @@ Competition::~Competition()
 
 }
 
-void Competition::createPlayer(vector<int> &pN, map<int, Player> &mp)
+void Competition::initCompetition()
 {
-	for(int i = 0;i < 12;i++)
-	{
-		pN.push_back(10002+i);
-	}
+	this->index = 1;
+	this->v1.clear();
+	this->v2.clear();
+	this->vVictory.clear();
+	this->player.clear();
+}
 
-	random_shuffle(pN.begin(), pN.end());
-
+void Competition::createPlayer()
+{
 	string nameFlag = "ABCDEFGHIJKL";
 	for(int i = 0;i < 12;i++)
 	{
 		string name = "选手";
 		name += nameFlag[i];
-		Player p(name, 0);
-		mp.insert(pair<int, Player>(pN[i], p));
+		v1.push_back(10002+i);
+		Player p(this->index, name, 0);
+		player.insert(pair<int, Player>(10002+i, p));
 	}
 }
 
-
-void Competition::markPlayer(map<int, Player> &player)
+void Competition::drawLots()
 {
-	for(map<int, Player>::iterator it = player.begin(); it != player.end(); it++)
+	
+
+	cout<<"-----第"<<this->index<<"轮比赛选手正在抽签---"<<endl;
+	cout<<"-----------------"<<endl;
+	cout<<"抽签后演讲顺序如下： "<<endl;
+
+	if(this->index == 1)
+	{
+		random_shuffle(v1.begin(), v1.end());
+		for(vector<int>::const_iterator it = v1.begin(); it != v1.end(); it++)
+		{
+			cout<<*it<<" ";
+		}
+		cout<<endl;
+	}
+	else
+	{
+		random_shuffle(v2.begin(), v2.end());
+		for(vector<int>::const_iterator it = v2.begin(); it != v2.end(); it++)
+		{
+			cout<<*it<<" ";
+		}
+		cout<<endl;
+	}
+	
+	cout<<"-----------------"<<endl;
+}
+
+void Competition::kickOff()
+{
+	cout<<"-----第"<<this->index<<"轮演讲正式开始------"<<endl;
+	vector<int> vTemp;
+	multimap<float, int, greater<float>> mTemp;
+	int num = 0;
+	if(this->index == 1)
+	{
+		vTemp = v1;
+	}
+	else
+	{
+		vTemp = v2;
+	}
+
+	for(vector<int>::iterator it = vTemp.begin();it != vTemp.end();it++)
 	{
 		deque<int> d;
 		for(int i = 0;i < 10;i++)
 		{
-			int score = 60+rand()%41;
+			int score = (600+rand()%410) / 10.0f;
 			d.push_back(score);
 		}
 		sort(d.begin(), d.end());
 
 		d.pop_front();
 		d.pop_back();
-		int sum = 0;
-		for(deque<int>::iterator it = d.begin();it != d.end();it++)
-		{
-			sum += *it;
-		}
-		float avg = sum * 1.0 / d.size();
 
-		it->second.setScore(avg);
-	}
-}
-
-void Competition::printPlayer(vector<Player> &p)
-{
-	for(vector<Player>::iterator it = p.begin();it != p.end();it++)
-	{
-		cout<<"选手:"<<it->getName()<<"成绩:"<<it->getScore()<<endl;
-	}
-}
-
-void Competition::printGrouping(map<int, Player> &grouping)
-{
-	
-	int size = grouping.size();
-	int index = 0;
-	map<int, Player>::iterator it = grouping.begin();
-	cout<<"第一组:"<<endl;
-	sort(grouping.begin(), grouping.end(), MyCompare());
-	for( ; it != grouping.end() && index < size / 2; it++, index++)
-	{
-		cout<<"编号："<<it->first<<" 姓名:"<<it->second.getName()<<" 成绩:"<<it->second.getScore()<<endl;
-	}
-
-	index = size / 2;
-	cout<<"第二组:"<<endl;
-	for( ; it != grouping.end() && index < size; it++, index++)
-	{
+		float sum = accumulate(d.begin(), d.end(), 0);
 		
-		cout<<"编号："<<it->first<<" 姓名:"<<it->second.getName()<<" 成绩:"<<it->second.getScore()<<endl;
+		float avg = sum / d.size();
+
+		map<int,Player>::iterator pos = player.find(*it);
+		if(pos == player.end())
+		{
+			cout<<"没有找到key为"<<*it<<"的值"<<endl;
+		}
+		else
+		{
+			pos->second.setScore(this->index-1, avg);
+			mTemp.insert(pair<float, int>(avg, *it));
+		}
+
+		num++;
+
+		if(num % 6 == 0)
+		{
+			int count = 0;
+			cout<<"第"<<num / 6<<"组比赛名次"<<endl;
+			for(multimap<float, int, greater<float>>::iterator it = mTemp.begin();it != mTemp.end();it++, count++)
+			{
+				cout<<"编号:"<<it->second<<"\t姓名:"<<player.find(it->second)->second.getName()<<"\t成绩:"<<player.find(it->second)->second.getScore(this->index-1)<<endl;
+				if(count < 3)
+				{
+					v2.push_back(it->second);
+				}	
+			}
+			mTemp.clear();
+			cout<<endl;
+		}
 	}
+	cout<<"-----第"<<this->index<<"轮演讲结束------"<<endl;
+	this->index++;
 }
 
-void print(pair<int, Player> p)
+
+void Competition::competitionSchedule()
 {
-	cout<<p.first<<" ";
+	drawLots();
+	kickOff();
 }
 
-void Competition::initCompetition(vector<int> &playerNum, map<int, Player> &grouping)
-{
-	playerNum.clear();
-	grouping.clear();
-}
 
 void Competition::showMenu()
 {
@@ -107,22 +147,7 @@ void Competition::showMenu()
 	cout<<"-----------------------------"<<endl;
 }
 
-void Competition::kickOff(vector<int> &playerNum, map<int, Player> &grouping)
-{
-	createPlayer(playerNum, grouping);
 
-	cout<<"第一轮比赛选手正在抽签"<<endl;
-	cout<<"-----------------"<<endl;
-	cout<<"抽签后演讲顺序如下： "<<endl;
-	for_each(grouping.begin(), grouping.end(), print);
-	cout<<endl;
-	cout<<"-----------------"<<endl;
-
-	cout<<"-----第一轮比赛正式开始-----"<<endl;
-	markPlayer(grouping);
-	printGrouping(grouping);
-
-}
 
 void Competition::lookAtPastRecords()
 {

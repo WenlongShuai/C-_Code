@@ -10,45 +10,41 @@
 
 
 #include <iostream>
-
-#include <ctime>
-#include <cstdlib>
 #include "Competition.h"
 
 using namespace std;
 
 int main()
 {
-	srand((unsigned int)time(NULL));
-	vector<Player> player;
-	multimap<int, Player> grouping;
-
-	printMenu();
-
-	cout<<"请输入您的选择："<<endl;
+	Competition competition;
 	int choice = 0;
-	cin>>choice;
+	srand((unsigned int)time(NULL));
 
-	kickOff();
+	do
+	{
+		competition.showMenu();
+		cout<<"请输入您的选择："<<endl;
+		cin>>choice;
 
-	// do
-	// {
-	// 	switch(choice)
-	// 	{
-	// 	case 1:
-	// 		kickOff();
-	// 		break;
-	// 	case 2:
-	// 		lookAtPastRecords();
-	// 		break;
-	// 	case 3:
-	// 		clearRecords();
-	// 		break;
-	// 	case 0:
-	// 		cout<<"退出比赛"<<endl;
-	// 		break;
-	// 	}
-	// }while(choice);
+		switch(choice)
+		{
+		case 1:
+			competition.competitionSchedule();
+			break;
+		case 2:
+			competition.lookAtPastRecords();
+			break;
+		case 3:
+			competition.clearRecords();
+			break;
+		case 0:
+			competition.exit();
+			break;
+		default:
+			competition.inputError();
+			break;
+		}
+	}while(choice);
 
 	return 0;
 }
