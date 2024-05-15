@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <fstream>
+#include <string>
 #include <ctime>
 #include <cstdlib>
 #include "Player.h"
@@ -25,6 +27,7 @@ public:
 	void createPlayer();
 	void drawLots();
 	void kickOff();
+	void listOfWinners();
 	void competitionSchedule();
 
 	void showMenu();
