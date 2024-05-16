@@ -16,7 +16,6 @@ void Competition::initCompetition()
 	this->index = 1;
 	this->v1.clear();
 	this->v2.clear();
-	this->vVictory.clear();
 	this->player.clear();
 }
 
@@ -35,9 +34,9 @@ void Competition::createPlayer()
 
 void Competition::drawLots()
 {
-	cout<<"-----第"<<this->index<<"轮比赛选手正在抽签---"<<endl;
-	cout<<"-----------------"<<endl;
-	cout<<"抽签后演讲顺序如下： "<<endl;
+	cout<<"-----第"<<this->index<<"轮比赛选手正在抽签-----"<<endl;
+	cout<<"----------------------------"<<endl;
+	cout<<"-----抽签后演讲顺序如下：-----"<<endl;
 
 	if(this->index == 1)
 	{
@@ -58,7 +57,7 @@ void Competition::drawLots()
 		cout<<endl;
 	}
 	
-	cout<<"-----------------"<<endl;
+	cout<<"----------------------------"<<endl;
 }
 
 void Competition::kickOff()
@@ -111,7 +110,7 @@ void Competition::kickOff()
 		if(num % 6 == 0)
 		{
 			int count = 0;
-			cout<<"第"<<num / 6<<"组比赛名次"<<endl;
+			cout<<"-----第"<<num / 6<<"组比赛名次-----"<<endl;
 			for(multimap<float, int, greater<float>>::iterator it = mTemp.begin();it != mTemp.end();it++, count++)
 			{
 				cout<<"编号:"<<it->second<<"\t姓名:"<<player.find(it->second)->second.getName()<<"\t成绩:"<<player.find(it->second)->second.getScore(this->index-1)<<endl;
@@ -127,19 +126,29 @@ void Competition::kickOff()
 	cout<<"-----第"<<this->index<<"轮演讲结束------"<<endl;
 }
 
-void Competition::listOfWinners()
+void Competition::showScore()
+{
+	cout<<"-----第"<<this->index<<"轮获胜名单-----"<<endl;
+	for(vector<int>::iterator it = v2.begin();it != v2.end();it++)
+	{
+		cout<<"编号:"<<*it<<"\t姓名:"<<player.find(*it)->second.getName()<<"\t成绩:"<<player.find(*it)->second.getScore(this->index-1)<<endl;	
+	}
+	cout<<endl;
+}
+
+void Competition::saveListOfWinners()
 {
 	ofstream ofs;
 	ofs.open("./victoryScore.csv", ios::out | ios::app);
 	if(!ofs.is_open())
 	{
-		cout<<"listOfWinners 打开文件失败"<<endl;
+		cout<<"文件不存在"<<endl;
+		ofs.close();
 		return;
 	}
-	cout<<"-----两轮演讲结束,获胜名单-----"<<endl;
-	for(vector<int>::const_iterator it = v2.begin(); it != v2.end(); it++)
+
+	for(vector<int>::iterator it = v2.begin(); it != v2.end(); it++)
 	{
-		vVictory.push_back(*it);
 		map<int, Player>::iterator pos = player.find(*it);
 		if(pos == player.end())
 		{
@@ -147,8 +156,7 @@ void Competition::listOfWinners()
 		}
 		else
 		{
-			cout<<"编号:"<<pos->first<<"\t姓名:"<<pos->second.getName()<<"\t成绩:"<<pos->second.getScore(this->index-1)<<endl;	
-			ofs<<pos->first<<","<<pos->second.getScore(this->index-1)<<",";
+			ofs<<pos->first<<","<<pos->second.getScore(1)<<",";
 		}	
 	}
 	ofs<<endl;
@@ -160,10 +168,13 @@ void Competition::competitionSchedule()
 {
 	drawLots();
 	kickOff();
+	showScore();
 	this->index++;
 	drawLots();
 	kickOff();
-	listOfWinners();
+	showScore();
+
+	saveListOfWinners();
 	initCompetition();
 	createPlayer();
 }
@@ -189,9 +200,21 @@ void Competition::lookAtPastRecords()
 	ifs.open("./victoryScore.csv", ios::in);
 	if(!ifs.is_open())
 	{
-		cout<<"lookAtPastRecords 打开文件失败"<<endl;
+		cout<<"打开文件失败"<<endl;
+		ifs.close();
 		return;
 	}
+
+	char ch;
+	ifs>>ch;
+	if(ifs.eof())
+	{
+		cout<<"往届记录为空"<<endl;
+		ifs.close();
+		return;
+	}
+
+	ifs.putback(ch);
 
 	string buf = "";
 	int count = 1;
@@ -239,12 +262,22 @@ void Competition::lookAtPastRecords()
 
 void Competition::clearRecords()
 {
-	ofstream ofs;
+	cout<<"-----是否清空往届记录-----"<<endl;
+	cout<<"---------1、是-----------"<<endl;
+	cout<<"---------2、否-----------"<<endl;
 
+	int choice = 0;
+	cin>>choice;
+	if(choice == 2)
+	{
+		return;
+	}
+	ofstream ofs;
 	ofs.open("./victoryScore.csv", ios::trunc);
 	if(!ofs.is_open())
 	{
 		cout<<"clearRecords 打开文件失败"<<endl;
+		ofs.close();
 		return;
 	}
 	cout<<"清除记录成功"<<endl;
