@@ -44,7 +44,7 @@ void Interface::studentLogin()
 		if(passwd == pos->second)
 		{
 			cout<<"学号密码正确"<<endl;
-			student.showSubMenu();
+			student.enterStudentScreen();
 		}
 		else
 		{
@@ -118,8 +118,6 @@ void Interface::loadAllCSV()
 {
 	vector<string> v;
 	string fileName[3] = {"studentPW.csv", "teacherPW.csv", "managementPW.csv"};
-	// map<string, string> (&managementMap)[3] = {this->management.studentPW, this->management.teacherPW, this->management.managementPW};
-
 	int size = sizeof(fileName) / sizeof(fileName[0]);
 
 	ifstream ifs;

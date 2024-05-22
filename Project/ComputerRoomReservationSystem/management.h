@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include "computerRoom.h"
 
 using namespace std;
 
@@ -12,7 +13,7 @@ class Management
 {
 public:
 
-	// Management();
+	Management();
 
 	~Management();
 
@@ -46,12 +47,16 @@ public:
 
 	void viewComputerRoom();
 
+	void ComputerRoomState(int num);
+
 	void logout(void (*fun)());
 
 
 	map<string, string> studentPW;
 	map<string, string> teacherPW;
 	map<string, string> managementPW;
+
+	ComputerRoom room;
 
 
 private:

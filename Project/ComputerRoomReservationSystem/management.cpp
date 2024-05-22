@@ -1,11 +1,11 @@
 #include "management.h"
 
-// Management::Management()
-// {
-// 	this->studentPW.clear();
-// 	this->teacherPW.clear();
-// 	this->managementPW.clear();
-// }
+Management::Management()
+{
+	this->studentPW.clear();
+	this->teacherPW.clear();
+	this->managementPW.clear();
+}
 
 Management::~Management()
 {
@@ -39,6 +39,7 @@ void Management::showSubMenu()
 	cout<<"---------1、添加账号----------"<<endl;
 	cout<<"---------2、查看账号----------"<<endl;
 	cout<<"---------3、查看机房----------"<<endl;
+
 	cout<<"---------0、注销登录----------"<<endl;
 	cout<<"-----------------------------"<<endl;
 }
@@ -192,28 +193,128 @@ void Management::addingAnAccount()
 void Management::viewStudentAccount()
 {
 	cout<<"学生:"<<endl;
-	for(map<string, string>::const_iterator it = this->studentPW.begin();it != this->studentPW.end();it++)
+
+	vector<string> v;
+
+	ifstream ifs;
+	ifs.open("studentPW.csv", ios::in);
+	if(!ifs.is_open())
 	{
-		cout<<it->first<<" "<<it->second<<endl;
+		cout<<"studentPW.csv"<<" fail"<<endl;
+		ifs.close();
+		return;
 	}
+	string str = "";
+	int startPos = 0;
+	int endPos = 0;
+
+	while(ifs>>str)
+	{
+		while(1)
+		{
+			endPos = str.find(",", startPos);
+			if(endPos == -1)
+			{
+				break;
+			}
+			string subStr = str.substr(startPos, endPos-startPos);
+			startPos = endPos+1;
+
+			v.push_back(subStr);
+		}
+		startPos = 0;
+	}
+
+	for(int i = 0;i < v.size()/3;i++)
+	{
+		cout<<"学号:"<<v[i*3]<<"\t姓名:"<<v[i*3+1]<<"\t密码:"<<v[i*3+2]<<endl;
+	}
+
+	ifs.close();
 }
 
 void Management::viewTeacherAccount()
 {
 	cout<<"教师:"<<endl;
-	for(map<string, string>::const_iterator it = this->studentPW.begin();it != this->studentPW.end();it++)
+	vector<string> v;
+
+	ifstream ifs;
+	ifs.open("teacherPW.csv", ios::in);
+	if(!ifs.is_open())
 	{
-		cout<<it->first<<" "<<it->second<<endl;
+		cout<<"teacherPW.csv"<<" fail"<<endl;
+		ifs.close();
+		return;
 	}
+	string str = "";
+	int startPos = 0;
+	int endPos = 0;
+
+	while(ifs>>str)
+	{
+		while(1)
+		{
+			endPos = str.find(",", startPos);
+			if(endPos == -1)
+			{
+				break;
+			}
+			string subStr = str.substr(startPos, endPos-startPos);
+			startPos = endPos+1;
+
+			v.push_back(subStr);
+		}
+		startPos = 0;
+	}
+
+	for(int i = 0;i < v.size()/3;i++)
+	{
+		cout<<"职工号:"<<v[i*3]<<"\t姓名:"<<v[i*3+1]<<"\t密码:"<<v[i*3+2]<<endl;
+	}
+
+	ifs.close();
 }
 
 void Management::viewManagementAccount()
 {
 	cout<<"管理员:"<<endl;
-	for(map<string, string>::const_iterator it = this->studentPW.begin();it != this->studentPW.end();it++)
+	vector<string> v;
+
+	ifstream ifs;
+	ifs.open("managementPW.csv", ios::in);
+	if(!ifs.is_open())
 	{
-		cout<<it->first<<" "<<it->second<<endl;
+		cout<<"managementPW.csv"<<" fail"<<endl;
+		ifs.close();
+		return;
 	}
+	string str = "";
+	int startPos = 0;
+	int endPos = 0;
+
+	while(ifs>>str)
+	{
+		while(1)
+		{
+			endPos = str.find(",", startPos);
+			if(endPos == -1)
+			{
+				break;
+			}
+			string subStr = str.substr(startPos, endPos-startPos);
+			startPos = endPos+1;
+
+			v.push_back(subStr);
+		}
+		startPos = 0;
+	}
+
+	for(int i = 0;i < v.size()/2;i++)
+	{
+		cout<<"姓名:"<<v[i*2]<<"\t密码:"<<v[i*2+1]<<endl;
+	}
+
+	ifs.close();
 }
 
 void Management::viewAccount()
@@ -244,9 +345,73 @@ void Management::viewAccount()
 	}
 }
 
+void Management::ComputerRoomState(int num)
+{
+	string time[] = {"8:00-9:00", "9:00-10:00", "10:00-11:00", "11:00-12:00" ,
+					 "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00"};
+	int size = sizeof(time) / sizeof(time[0]);
+
+	if(num == 4)
+	{
+		for(int i = 0;i < 3;i++)
+		{
+			cout<<"---------"<<i+1<<"号机房"<<"---------"<<endl;
+			for(int j = 0;j < size;j++)
+			{
+				if(j == size / 2 )
+				{
+					cout<<"------------下午-----------"<<endl;
+				}
+				else if(j == 0)
+				{
+					cout<<"------------上午------------"<<endl;
+				}
+				cout<<time[j]<<"\t---->\t"<<this->room.getRoomState(num-1, time[j])<<endl;
+			}
+		}	
+	}
+	else
+	{
+		cout<<"---------"<<num<<"号机房"<<"---------"<<endl;
+		for(int i = 0;i < size;i++)
+		{
+
+			if(i == size / 2)
+			{
+				cout<<"------------下午-----------"<<endl;
+			}
+			else if(i == 0)
+			{
+				cout<<"------------上午------------"<<endl;
+			}
+			cout<<time[i]<<"\t---->\t"<<this->room.getRoomState(num-1, time[i])<<endl;
+		}
+	}
+}
+
 void Management::viewComputerRoom()
 {
+	cout<<"-------查看机房状态-------"<<endl;
+	cout<<"-------1、1号机房--------"<<endl;
+	cout<<"-------2、2号机房-------"<<endl;
+	cout<<"-------3、3号机房-------"<<endl;
+	cout<<"-------4、全部机房-------"<<endl;
 
+	int choice = 0;
+	cin>>choice;
+
+	switch(choice)
+	{
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+		this->ComputerRoomState(choice);
+		break;
+	default:
+		cout<<"输入有误,请重新输入!"<<endl;
+		break;
+	}	
 }
 
 void Management::logout(void (*fun)())

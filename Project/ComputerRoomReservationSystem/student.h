@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -26,9 +27,20 @@ public:
 
 	void enterStudentScreen();
 
+	void requestAnAppointment();
+
+	void viewReservations();
+
+	void cancelTheReservation();
+
+	void viewAllReservations();
+
+	int index;
+
 private:
 	string studentNum;
 	string studentName;
 	string studentPassword;
+
 };
 
