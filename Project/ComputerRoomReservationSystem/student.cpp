@@ -2,7 +2,7 @@
 
 Student::Student()
 {
-	this->index = 1;
+	// this->index = 1;
 }
 
 Student::~Student()
@@ -131,7 +131,6 @@ void Student::requestAnAppointment()
 	cin>>choice;
 	hour = time[choice-1];
 
-
 	cout<<"请选择机房:"<<endl;
 	cout<<"1、1号机房容量:20"<<endl;
 	cout<<"2、2号机房容量:50"<<endl;
@@ -148,9 +147,8 @@ void Student::requestAnAppointment()
 		return;
 	}
 
-	ofs<<this->index<<"、预约日期:"<<day<<"\t时段:"<<hour<<"\t学号:"<<this->getStudentNum()<<"\t姓名:"<<this->getStudentName()<<"\t机房:"<<room<<"\t状态:"<<"审核中"<<endl;
+	ofs<<"预约日期:"<<day<<"\t时段:"<<hour<<"\t学号:"<<this->getStudentNum()<<"\t姓名:"<<this->getStudentName()<<"\t机房:"<<room<<"\t状态:"<<"审核中"<<endl;
 	cout<<"预约成功!"<<endl;
-	this->index++;
 	ofs.close();	
 }
 
@@ -174,17 +172,27 @@ void Student::viewReservations()
 		return;
 	}
 
+	int flag = 0;
+	int flag2 = 0;
+
 	ifs.putback(ch);
 	string buf = "";
+	int index = 1;
 	while(getline(ifs, buf))
 	{
-		cout<<"------>1111"<<this->getStudentNum()<<endl;
+		flag2++;
 		int pos = buf.find(this->getStudentNum(), 0);
 		if(pos == -1)
 		{
+			flag++;
 			continue;
 		}
-		cout<<buf<<endl;
+		cout<<index<<"、"<<buf<<endl;
+		index++;
+	}
+	if(flag == flag2)
+	{
+		cout<<"预约为空,请先预约!"<<endl;
 	}
 
 	ifs.close();
@@ -196,6 +204,8 @@ void Student::cancelTheReservation()
 	int pos = -1;
 	int pos2 = -1;
 	vector<string> v;
+	vector<string> vAll;
+
 
 	ifstream ifs;
 	ifs.open("order.csv", ios::in);
@@ -206,9 +216,10 @@ void Student::cancelTheReservation()
 		return;
 	}
 	string buf = "";
+	int index = 1;
 	while(getline(ifs, buf))
 	{
-		v.push_back(buf);
+		vAll.push_back(buf);
 
 		pos = buf.find(this->getStudentNum(), 0);
 		if(pos == -1)
@@ -221,8 +232,9 @@ void Student::cancelTheReservation()
 		{
 			continue;
 		}
-
-		cout<<buf<<endl;
+		v.push_back(buf);
+		cout<<index<<"、"<<buf<<endl;
+		index++;
 	}
 	ifs.close();
 
@@ -240,22 +252,21 @@ void Student::cancelTheReservation()
 			}
 			else
 			{
-				for(vector<string>::iterator it = v.begin();it!=v.end();it++)
-				{
-					pos = (*it).find(to_string(input), 0);
-					if(pos != -1)
-					{
-						pos2 = buf.find("状态:", 0);
-						pos2 = pos2 + 3;
-						int endPos = buf.find("\n", 0);
-						buf.erase(pos2, endPos-pos2);
-						buf.insert(pos2, "预约已取消");
-						
-						v.insert(it, buf);
-			
-					}
 
+				for(vector<string>::iterator it = vAll.begin();it!=vAll.end();it++)
+				{
+					if(*it == v[input-1])
+					{
+						pos2 = (*it).find("状态:", 0);
+						cout<<"pos2--->"<<pos2<<endl;
+						pos2 = pos2+7;
+						int endPos = (*it).size();
+						(*it).erase(pos2, endPos-pos2);
+						(*it).insert(pos2, "预约已取消");
+					}
 				}
+				cout<<"成功取消预约"<<endl;
+				break;
 			}
 		}
 		else
@@ -264,24 +275,19 @@ void Student::cancelTheReservation()
 		}
 	}
 
-	for(vector<string>::iterator it = v.begin();it!=v.end();it++)
+	ofstream ofs;
+	ofs.open("order.csv", ios::out | ios::trunc);
+	if(!ofs.is_open())
 	{
-		cout<<"----->"<<*it<<endl;
+		cout<<"order.csv open fail"<<endl;
+		ofs.close();
+		return;
 	}
 
-	ofstream ofs;
-	// ofs.open("order.csv", ios::out | ios::trunc);
-	// if(!ofs.is_open())
-	// {
-	// 	cout<<"order.csv open fail"<<endl;
-	// 	ofs.close();
-	// 	return;
-	// }
-
-	// for(vector<string>::iterator it = v.begin();it!=v.end();it++)
-	// {
-	// 	ofs<<*it<<endl;
-	// }
+	for(vector<string>::iterator it = vAll.begin();it!=vAll.end();it++)
+	{
+		ofs<<*it<<endl;
+	}
 
 	ofs.close();
 }
@@ -297,9 +303,12 @@ void Student::viewAllReservations()
 		return;
 	}
 	string buf = "";
+	int index = 1;
+
 	while(getline(ifs, buf))
 	{
-		cout<<buf<<endl;
+		cout<<index<<"、"<<buf<<endl;
+		index++;
 	}
 
 	ifs.close();

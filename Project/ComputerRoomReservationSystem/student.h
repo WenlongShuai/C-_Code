@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstring>
+// #include <management.h>
 
 
 using namespace std;
@@ -37,7 +39,7 @@ public:
 
 	void viewAllReservations();
 
-	int index;
+	// int index;
 
 private:
 	string studentNum;

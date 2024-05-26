@@ -158,15 +158,15 @@ void Interface::loadAllCSV()
 		int startPos = 0;
 		int endPos = 0;
 
-		if(i == 3)
-		{
-			while(getline(ifs, str))
-			{
-				this->student.index++;
-			}
-		}
-		else
-		{
+		// if(i == 3)
+		// {
+		// 	while(getline(ifs, str))
+		// 	{
+		// 		this->student.index++;
+		// 	}
+		// }
+		// else
+		// {
 			while(getline(ifs, str))
 			{
 				// cout<<str<<endl;
@@ -184,7 +184,7 @@ void Interface::loadAllCSV()
 				}
 				startPos = 0;
 			}
-		}
+		// }
 		
 
 		if(i == 2)

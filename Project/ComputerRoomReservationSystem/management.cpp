@@ -89,6 +89,26 @@ void Management::addStudentAccount()
 	cout<<"请输入添加学生的密码:";
 	cin>>passwd;
 
+	ifstream ifs;
+	ifs.open("studentPW.csv", ios::in);
+	if(!ifs.is_open())
+	{
+		cout<<"open studentPW.csv fail"<<endl;
+		ifs.close();
+		return;
+	}
+
+	string buf = "";
+	while(getline(ifs, buf))
+	{
+		if(buf.find(num) != -1)
+		{
+			cout<<"学号重复,请重新输入"<<endl;
+			ifs.close();
+			return;
+		}
+	}
+
 	ofstream ofs;
 	ofs.open("studentPW.csv", ios::out | ios::app);
 	if(!ofs.is_open())
@@ -125,6 +145,27 @@ void Management::addTeacherAccount()
 	cout<<"请输入添加教师的密码:";
 	cin>>passwd;
 
+
+	ifstream ifs;
+	ifs.open("teacherPW.csv", ios::in);
+	if(!ifs.is_open())
+	{
+		cout<<"open teacherPW.csv fail"<<endl;
+		ifs.close();
+		return;
+	}
+
+	string buf = "";
+	while(getline(ifs, buf))
+	{
+		if(buf.find(num) != -1)
+		{
+			cout<<"职工号重复,请重新输入"<<endl;
+			ifs.close();
+			return;
+		}
+	}
+
 	ofstream ofs;
 	ofs.open("teacherPW.csv", ios::out | ios::app);
 	if(!ofs.is_open())
@@ -152,6 +193,26 @@ void Management::addManagementAccount()
 
 	cout<<"请输入添加管理员的密码:";
 	cin>>passwd;
+
+	ifstream ifs;
+	ifs.open("managementPW.csv", ios::in);
+	if(!ifs.is_open())
+	{
+		cout<<"open managementPW.csv fail"<<endl;
+		ifs.close();
+		return;
+	}
+
+	string buf = "";
+	while(getline(ifs, buf))
+	{
+		if(buf.find(name) != -1)
+		{
+			cout<<"管理员姓名重复,请重新输入"<<endl;
+			ifs.close();
+			return;
+		}
+	}
 
 	ofstream ofs;
 	ofs.open("managementPW.csv", ios::out | ios::app);
