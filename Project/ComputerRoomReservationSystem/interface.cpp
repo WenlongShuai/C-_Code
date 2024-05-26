@@ -19,6 +19,7 @@ void Interface::showMainMenu()
 	cout<<"---------3、管理员-----------"<<endl;
 	cout<<"---------0、退出-------------"<<endl;
 	cout<<"----------------------------"<<endl;
+	
 }
 
 void Interface::studentLogin()
@@ -34,21 +35,31 @@ void Interface::studentLogin()
 	cout<<"密码:";
 	cin>>passwd;
 
-	map<string, string>::iterator pos = this->management.studentPW.find(num);
+	multimap<string, map<string, string>>::iterator pos = this->management.studentPW.find(name);
 	if(pos == this->management.studentPW.end())
 	{
-		cout<<"学号错误,请重新输入!"<<endl;
+		cout<<"姓名错误,请重新输入!"<<endl;
 	}
 	else
 	{
-		if(passwd == pos->second)
+		map<string, string>::iterator subPos = pos->second.find(num);
+		if(subPos == pos->second.end())
 		{
-			cout<<"学号密码正确"<<endl;
-			student.enterStudentScreen();
+			cout<<"学号错误,请重新输入!"<<endl;
 		}
 		else
 		{
-			cout<<"密码错误,请重新输入!"<<endl;
+			if(passwd == subPos->second)
+			{
+				cout<<"密码正确"<<endl;
+				this->student.setStudentNum(num);
+				this->student.setStudentName(name);
+				student.enterStudentScreen();
+			}
+			else
+			{
+				cout<<"密码错误,请重新输入!"<<endl;
+			}
 		}
 	}
 }
@@ -66,21 +77,30 @@ void Interface::teacherLogin()
 	cout<<"密码:";
 	cin>>passwd;
 
-	map<string, string>::iterator pos = this->management.teacherPW.find(num);
+
+	multimap<string, map<string, string>>::iterator pos = this->management.teacherPW.find(name);
 	if(pos == this->management.teacherPW.end())
 	{
-		cout<<"用户名错误,请重新输入!"<<endl;
+		cout<<"姓名错误,请重新输入!"<<endl;
 	}
 	else
 	{
-		if(passwd == pos->second)
+		map<string, string>::iterator subPos = pos->second.find(num);
+		if(subPos == pos->second.end())
 		{
-			cout<<"用户名密码正确"<<endl;
-			teacher.showSubMenu();
+			cout<<"职工号错误,请重新输入!"<<endl;
 		}
 		else
 		{
-			cout<<"用户名密码错误,请重新输入!"<<endl;
+			if(passwd == subPos->second)
+			{
+				cout<<"密码正确"<<endl;
+				teacher.showSubMenu();
+			}
+			else
+			{
+				cout<<"密码错误,请重新输入!"<<endl;
+			}
 		}
 	}
 }
@@ -117,8 +137,11 @@ void Interface::managementLogin()
 void Interface::loadAllCSV()
 {
 	vector<string> v;
-	string fileName[3] = {"studentPW.csv", "teacherPW.csv", "managementPW.csv"};
+	map<string, string> tmp;
+
+	string fileName[] = {"studentPW.csv", "teacherPW.csv", "managementPW.csv", "order.csv"};
 	int size = sizeof(fileName) / sizeof(fileName[0]);
+
 
 	ifstream ifs;
 
@@ -135,25 +158,35 @@ void Interface::loadAllCSV()
 		int startPos = 0;
 		int endPos = 0;
 
-		while(ifs>>str)
+		if(i == 3)
 		{
-			// cout<<str<<endl;
-			while(1)
+			while(getline(ifs, str))
 			{
-				endPos = str.find(",", startPos);
-				if(endPos == -1)
-				{
-					break;
-				}
-				string subStr = str.substr(startPos, endPos-startPos);
-				startPos = endPos+1;
-
-				v.push_back(subStr);
+				this->student.index++;
 			}
-			startPos = 0;
 		}
+		else
+		{
+			while(getline(ifs, str))
+			{
+				// cout<<str<<endl;
+				while(1)
+				{
+					endPos = str.find(",", startPos);
+					if(endPos == -1)
+					{
+						break;
+					}
+					string subStr = str.substr(startPos, endPos-startPos);
+					startPos = endPos+1;
 
+					v.push_back(subStr);
+				}
+				startPos = 0;
+			}
+		}
 		
+
 		if(i == 2)
 		{
 			for(int j = 0;j < v.size()/2;j++)
@@ -166,20 +199,23 @@ void Interface::loadAllCSV()
 			if(i == 1)
 			{
 				for(int j = 0;j < v.size()/3;j++)
-				{
-					this->management.teacherPW.insert(make_pair(v[j*3+0], v[j*3+2]));
+				{	
+					tmp.insert(make_pair(v[j*3+0], v[j*3+2]));
+					this->management.teacherPW.insert(make_pair(v[j*3+1], tmp));
 				}
 			}
-			else
+			else if(i == 0)
 			{
 				for(int j = 0;j < v.size()/3;j++)
 				{
-					this->management.studentPW.insert(make_pair(v[j*3+0], v[j*3+2]));
+					tmp.insert(make_pair(v[j*3+0], v[j*3+2]));
+					this->management.studentPW.insert(make_pair(v[j*3+1], tmp));
 				}
 			}
 		}
 	
 		v.clear();
+		tmp.clear();
 		ifs.close();
 	}
 }

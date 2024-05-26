@@ -78,6 +78,7 @@ void Management::addStudentAccount()
 	string name = "";
 	string passwd = "";
 	string num = "";
+	map<string, string> tmp;
 
 	cout<<"请输入添加学生的学号:";
 	cin>>num;
@@ -98,6 +99,11 @@ void Management::addStudentAccount()
 	}
 
 	ofs<<num<<","<<name<<","<<passwd<<","<<endl;
+
+	tmp.insert(make_pair(num, passwd));
+
+	this->studentPW.insert(make_pair(name, tmp));
+
 	cout<<"添加成功"<<endl;
 
 	ofs.close();
@@ -108,6 +114,7 @@ void Management::addTeacherAccount()
 	string name = "";
 	string passwd = "";
 	string num = "";
+	map<string, string> tmp;
 
 	cout<<"请输入添加教师的职工号:";
 	cin>>num;
@@ -128,6 +135,8 @@ void Management::addTeacherAccount()
 	}
 
 	ofs<<num<<","<<name<<","<<passwd<<","<<endl;
+	tmp.insert(make_pair(num, passwd));
+	this->teacherPW.insert(make_pair(name, tmp));
 	cout<<"添加成功"<<endl;
 
 	ofs.close();
@@ -154,6 +163,8 @@ void Management::addManagementAccount()
 	}
 
 	ofs<<name<<","<<passwd<<","<<endl;
+
+	this->managementPW.insert(make_pair(name, passwd));
 
 	cout<<"添加成功"<<endl;
 

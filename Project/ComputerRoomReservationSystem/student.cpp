@@ -2,7 +2,7 @@
 
 Student::Student()
 {
-	this->index = 0;
+	this->index = 1;
 }
 
 Student::~Student()
@@ -56,12 +56,10 @@ void Student::showSubMenu()
 
 void Student::enterStudentScreen()
 {
-	this->showSubMenu();
-
 	int choice = 0;
-	
 	do
 	{
+		this->showSubMenu();
 		cin>>choice;
 
 		switch(choice)
@@ -105,8 +103,6 @@ void Student::requestAnAppointment()
 
 	ofstream ofs;
 
-
-
 	cout<<"机房开放时间为周一到周五:"<<endl;
 	cout<<"请输入预约的时间:"<<endl;
 	cout<<"1、周一"<<endl;
@@ -144,9 +140,6 @@ void Student::requestAnAppointment()
 	cin>>choice;
 	room = computerRoom[choice-1];
 
-	this->index++;
-
-
 	ofs.open("order.csv", ios::out | ios::app);
 	if(!ofs.is_open())
 	{
@@ -155,8 +148,9 @@ void Student::requestAnAppointment()
 		return;
 	}
 
-	ofs<<this->index<<"、预约日期:"<<day<<"时段:"<<hour<<"学号:"<<this->getStudentNum()<<"姓名:"<<this->getStudentName()<<"机房:"<<room<<"状态:"<<"审核中"<<endl;
+	ofs<<this->index<<"、预约日期:"<<day<<"\t时段:"<<hour<<"\t学号:"<<this->getStudentNum()<<"\t姓名:"<<this->getStudentName()<<"\t机房:"<<room<<"\t状态:"<<"审核中"<<endl;
 	cout<<"预约成功!"<<endl;
+	this->index++;
 	ofs.close();	
 }
 
@@ -166,17 +160,29 @@ void Student::viewReservations()
 	ifs.open("order.csv", ios::in);
 	if(!ifs.is_open())
 	{
+		
+		cout<<"open order.csv fail!"<<endl;
+		ifs.close();
+		return;
+	}
+
+	char ch = ifs.get();
+	if(ch == EOF)
+	{
 		cout<<"预约为空,请先预约!"<<endl;
 		ifs.close();
 		return;
 	}
+
+	ifs.putback(ch);
 	string buf = "";
 	while(getline(ifs, buf))
 	{
+		cout<<"------>1111"<<this->getStudentNum()<<endl;
 		int pos = buf.find(this->getStudentNum(), 0);
 		if(pos == -1)
 		{
-			break;
+			continue;
 		}
 		cout<<buf<<endl;
 	}
@@ -189,6 +195,8 @@ void Student::cancelTheReservation()
 	cout<<"审核中或预约成功的记录可以取消,请输入取消的记录:"<<endl;
 	int pos = -1;
 	int pos2 = -1;
+	vector<string> v;
+
 	ifstream ifs;
 	ifs.open("order.csv", ios::in);
 	if(!ifs.is_open())
@@ -200,53 +208,81 @@ void Student::cancelTheReservation()
 	string buf = "";
 	while(getline(ifs, buf))
 	{
+		v.push_back(buf);
+
 		pos = buf.find(this->getStudentNum(), 0);
 		if(pos == -1)
 		{
-			break;
+			continue;
 		}
 		pos = buf.find("审核中", 0);
 		pos2 = buf.find("预约成功", 0);
 		if(pos == -1 && pos2 == -1)
 		{
-			break;
+			continue;
 		}
+
 		cout<<buf<<endl;
 	}
-	
+	ifs.close();
 
 	cout<<"请输入取消的记录,0代表返回"<<endl;
-	string input = "";
-	cin>>input;
+	int input = 0;
 
-	ofstream ofs;
-	ofs.open("order.csv", ios::out | ios::app);
-	if(!ofs.is_open())
+	while(true)
 	{
-		cout<<"order.csv open fail"<<endl;
-		ofs.close();
-		return;
-	}
-
-	if(input != "0")
-	{
-		while(getline(ifs, buf))
+		cin>>input;
+		if(input >= 0 && input <= v.size())
 		{
-			pos = buf.find(input, 0);
-			if(pos == -1)
+			if(input == 0)
 			{
 				break;
 			}
-			// ofs<<input<<"、预约日期:"<<day<<"时段:"<<hour<<"学号:"<<this->getStudentNum()<<"姓名:"<<this->getStudentName()<<"机房:"<<room<<"状态:"<<"审核中"<<endl;
-			pos2 = buf.find("状态:", 0);
-			pos2 = pos2 + 3;
-			int endPos = buf.find("\n", 0);
-			buf.erase(pos2, endPos-pos2);
-			buf.insert(pos2, "预约已取消");
+			else
+			{
+				for(vector<string>::iterator it = v.begin();it!=v.end();it++)
+				{
+					pos = (*it).find(to_string(input), 0);
+					if(pos != -1)
+					{
+						pos2 = buf.find("状态:", 0);
+						pos2 = pos2 + 3;
+						int endPos = buf.find("\n", 0);
+						buf.erase(pos2, endPos-pos2);
+						buf.insert(pos2, "预约已取消");
+						
+						v.insert(it, buf);
+			
+					}
+
+				}
+			}
+		}
+		else
+		{
+			cout<<"输入有误,请重新输入:"<<endl;
 		}
 	}
 
-	ifs.close();
+	for(vector<string>::iterator it = v.begin();it!=v.end();it++)
+	{
+		cout<<"----->"<<*it<<endl;
+	}
+
+	ofstream ofs;
+	// ofs.open("order.csv", ios::out | ios::trunc);
+	// if(!ofs.is_open())
+	// {
+	// 	cout<<"order.csv open fail"<<endl;
+	// 	ofs.close();
+	// 	return;
+	// }
+
+	// for(vector<string>::iterator it = v.begin();it!=v.end();it++)
+	// {
+	// 	ofs<<*it<<endl;
+	// }
+
 	ofs.close();
 }
 

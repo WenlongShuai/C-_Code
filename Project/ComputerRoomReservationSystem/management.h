@@ -52,8 +52,8 @@ public:
 	void logout(void (*fun)());
 
 
-	map<string, string> studentPW;
-	map<string, string> teacherPW;
+	multimap<string, map<string, string>> studentPW;
+	multimap<string, map<string, string>> teacherPW;
 	map<string, string> managementPW;
 
 	ComputerRoom room;
