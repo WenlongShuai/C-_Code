@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -25,6 +27,12 @@ public:
 	void showSubMenu();
 
 	void enterTeacherScreen();
+
+	void viewAllReservations();
+
+	void auditReservations();
+
+
 private:
 	string employeeNum;
 	string employeeName;

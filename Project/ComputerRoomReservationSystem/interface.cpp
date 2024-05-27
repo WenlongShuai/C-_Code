@@ -19,7 +19,7 @@ void Interface::showMainMenu()
 	cout<<"---------3、管理员-----------"<<endl;
 	cout<<"---------0、退出-------------"<<endl;
 	cout<<"----------------------------"<<endl;
-	
+
 }
 
 void Interface::studentLogin()
@@ -95,7 +95,7 @@ void Interface::teacherLogin()
 			if(passwd == subPos->second)
 			{
 				cout<<"密码正确"<<endl;
-				teacher.showSubMenu();
+				teacher.enterTeacherScreen();
 			}
 			else
 			{

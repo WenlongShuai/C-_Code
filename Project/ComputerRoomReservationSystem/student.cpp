@@ -236,8 +236,7 @@ void Student::cancelTheReservation()
 		cout<<index<<"、"<<buf<<endl;
 		index++;
 	}
-	ifs.close();
-
+	
 	cout<<"请输入取消的记录,0代表返回"<<endl;
 	int input = 0;
 
@@ -258,11 +257,11 @@ void Student::cancelTheReservation()
 					if(*it == v[input-1])
 					{
 						pos2 = (*it).find("状态:", 0);
-						cout<<"pos2--->"<<pos2<<endl;
 						pos2 = pos2+7;
 						int endPos = (*it).size();
 						(*it).erase(pos2, endPos-pos2);
 						(*it).insert(pos2, "预约已取消");
+						break;
 					}
 				}
 				cout<<"成功取消预约"<<endl;
@@ -289,6 +288,7 @@ void Student::cancelTheReservation()
 		ofs<<*it<<endl;
 	}
 
+	ifs.close();
 	ofs.close();
 }
 

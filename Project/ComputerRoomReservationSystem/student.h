@@ -39,8 +39,6 @@ public:
 
 	void viewAllReservations();
 
-	// int index;
-
 private:
 	string studentNum;
 	string studentName;
