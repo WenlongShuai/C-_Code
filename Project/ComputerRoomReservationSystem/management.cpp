@@ -39,7 +39,7 @@ void Management::showSubMenu()
 	cout<<"---------1、添加账号----------"<<endl;
 	cout<<"---------2、查看账号----------"<<endl;
 	cout<<"---------3、查看机房----------"<<endl;
-
+	cout<<"---------4、清空所有预约----------"<<endl;
 	cout<<"---------0、注销登录----------"<<endl;
 	cout<<"-----------------------------"<<endl;
 }
@@ -62,6 +62,9 @@ void Management::enterManagementScreen()
 			break;
 		case 3:
 			viewComputerRoom();
+			break;
+		case 4:
+			clearAllReservations();
 			break;
 		case 0:
 			cout<<"注销成功"<<endl;
@@ -484,6 +487,44 @@ void Management::viewComputerRoom()
 		cout<<"输入有误,请重新输入!"<<endl;
 		break;
 	}	
+}
+
+void Management::clearAllReservations()
+{
+	ifstream ifs;
+	ifs.open("order.csv", ios::in);
+	if(!ifs.is_open())
+	{
+		cout<<"order.csv"<<" fail"<<endl;
+		ifs.close();
+		return;
+	}
+	
+	char ch = 0;
+	if((ch=ifs.get()) == EOF )
+	{
+		cout<<"预约为空"<<endl;
+		ifs.close();
+		return;
+	}
+
+	ifs.putback(ch);
+
+	int choice = 0;
+	cin>>choice;
+
+	cout<<"1、确定"<<endl;
+	cout<<"2、取消"<<endl;
+
+	if(choice == 1)
+	{
+		ofstream ofs;
+		ofs.open("order.csv", ios::out | ios::trunc);
+
+		cout<<"清空成功"<<endl;
+		ofs.close();
+	}
+	ifs.close();
 }
 
 void Management::logout(void (*fun)())

@@ -47,6 +47,8 @@ public:
 
 	void viewComputerRoom();
 
+	void clearAllReservations();
+
 	void ComputerRoomState(int num);
 
 	void logout(void (*fun)());
